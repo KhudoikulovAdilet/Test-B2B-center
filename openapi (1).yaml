@@ -1,0 +1,79 @@
+openapi: 3.0.0
+info:
+  title: Тестовое задание B2B-center
+  version: 0.0.1
+  description: API для ветеринарной клиники для просмотра информации о питомцах
+
+
+paths:
+  /owners/{owner_id}:
+    get:
+      summary: Получить информацию о владельце и его питомцах
+      parameters:
+        - name: owner_id
+          in: path
+          required: true
+          description: Идентификатор владельца
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerWithPets'
+
+  /pets:
+    get:
+      summary: Получить список всех питомцев
+      parameters:
+        - name: without_owner
+          in: query
+          required: false
+          description: Флаг для поиска питомцев без владельца
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    
+components:
+  schemas:
+    Owner:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        owner_id:
+          type: integer
+          description: Идентификатор владельца. Может быть null, если питомец без владельца.
+
+    OwnerWithPets:
+      allOf:
+        - $ref: '#/components/schemas/Owner'
+        - properties:
+            pets:
+              type: array
+              items:
+                $ref: '#/components/schemas/Pet'
